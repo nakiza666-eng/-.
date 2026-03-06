@@ -1,19 +1,59 @@
-body {
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(to bottom, #fff1f8, #f0f0f0);
-  text-align: center;
-  padding: 10px;
-}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小小瘦身记</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h1>🔥 小小瘦身记 🔥</h1>
 
-.container { max-width: 400px; margin: auto; }
+  <div class="mini-player">
+    <img id="mini" src="https://user3695.cn.imgto.link/public/20260306/mini-normal-png.avif" alt="迷你自己">
+  </div>
 
-h1 { color: #ff6f91; }
+  <div class="record">
+    <h2>今日打卡</h2>
+    <label>体重: <input type="number" id="weight"></label>
+    <label>单位:
+      <select id="weightUnit">
+        <option value="jin" selected>斤</option>
+        <option value="kg">kg</option>
+      </select>
+    </label>
+    <label>运动消耗(kcal): <input type="number" id="exerciseCalories"></label>
+    <label>每日目标(kcal): <input type="number" id="targetCalories"></label>
 
-.mini-player img { width: 100px; transition: transform 0.5s; }
+    <h3>今日饮食记录</h3>
+    <div id="mealList">
+      <div class="meal">
+        <input type="text" class="mealName" placeholder="食物名称">
+        <input type="number" class="mealGram" placeholder="克数">
+        <button class="addMealBtn">添加</button>
+      </div>
+    </div>
+    <p>今日饮食总热量: <span id="mealCalories">0</span> kcal</p>
 
-.record { background: #fff; padding: 10px; margin: 10px 0; border-radius: 10px; }
-input { width: 60px; margin: 5px; }
-button { background: #ff6f91; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin: 2px;}
-button:hover { background: #ff5173; }
+    <p>蛋白(g): <span id="protein">0</span></p>
+    <p>碳水(g): <span id="carb">0</span></p>
+    <p>脂肪(g): <span id="fat">0</span></p>
+    <p>总热量(kcal): <span id="calories">0</span></p>
 
-.summary { margin: 10px 0; font-weight: bold; }
+    <button id="jumpBtn">跳跃</button>
+    <button id="eatBtn">吃东西</button>
+  </div>
+
+  <div class="summary">
+    <p>小人经验: <span id="exp">0</span></p>
+    <p>小人等级: <span id="level">1</span></p>
+    <p>预测目标体重达成日期: <span id="goalDate">-</span></p>
+  </div>
+
+  <canvas id="weightChart" width="350" height="150"></canvas>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
