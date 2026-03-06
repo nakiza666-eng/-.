@@ -4,16 +4,19 @@ body {
   text-align: center;
   padding: 10px;
 }
-
 .container { max-width: 400px; margin: auto; }
-
 h1 { color: #ff6f91; }
-
-.mini-player img { width: 100px; transition: transform 0.5s; }
-
-.record { background: #fff; padding: 10px; margin: 10px 0; border-radius: 10px; }
-input { width: 60px; margin: 5px; }
-button { background: #ff6f91; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin: 2px;}
-button:hover { background: #ff5173; }
-
+.mini-player img { width: 100px; transition: all 0.3s ease; cursor: pointer; }
+.record { background: #fff; padding: 10px; margin: 10px 0; border-radius: 15px; }
+input, span, select {
+  border-radius: 15px; border: 1px solid #ff9bb5; padding: 6px 8px;
+  text-align: center; width: 70px; transition: all 0.2s ease;
+}
+input:focus { outline: none; box-shadow: 0 0 5px #ff6f91; }
+button {
+  border-radius: 15px; transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background: #ff6f91; color: #fff; border: none; padding: 5px 10px; margin: 3px; cursor: pointer;
+}
+button:active { transform: scale(0.95); }
 .summary { margin: 10px 0; font-weight: bold; }
