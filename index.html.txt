@@ -1,40 +1,19 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>小小瘦身记</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="container">
-  <h1>🔥 小小瘦身记 🔥</h1>
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to bottom, #fff1f8, #f0f0f0);
+  text-align: center;
+  padding: 10px;
+}
 
-  <div class="mini-player">
-    <img id="mini" src="https://user3695.cn.imgto.link/public/20260306/mini-normal-png.avif" alt="迷你自己">
-  </div>
+.container { max-width: 400px; margin: auto; }
 
-  <div class="record">
-    <h2>今日打卡</h2>
-    <label>体重(斤): <input type="number" id="weight"></label>
-    <label>蛋白(g): <input type="number" id="protein"></label>
-    <label>碳水(g): <input type="number" id="carb"></label>
-    <label>脂肪(g): <input type="number" id="fat"></label>
-    <button id="saveBtn">保存今日数据</button>
-    <button id="jumpBtn">跳跃</button>
-    <button id="eatBtn">吃东西</button>
-  </div>
+h1 { color: #ff6f91; }
 
-  <div class="summary">
-    <p>今日热量: <span id="calories">0</span> kcal</p>
-    <p>小人经验: <span id="exp">0</span></p>
-    <p>小人等级: <span id="level">1</span></p>
-    <p>目标预测: <span id="goalDate">-</span></p>
-  </div>
+.mini-player img { width: 100px; transition: transform 0.5s; }
 
-  <canvas id="weightChart" width="300" height="150"></canvas>
-</div>
+.record { background: #fff; padding: 10px; margin: 10px 0; border-radius: 10px; }
+input { width: 60px; margin: 5px; }
+button { background: #ff6f91; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin: 2px;}
+button:hover { background: #ff5173; }
 
-<script src="script.js"></script>
-</body>
-</html>
+.summary { margin: 10px 0; font-weight: bold; }
