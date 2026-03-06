@@ -1,4 +1,4 @@
-// 初始化小人数据
+// 小人数据
 let playerMini = {
   level: 1,
   exp: 0,
@@ -12,28 +12,34 @@ const proteinInput = document.getElementById('protein');
 const carbInput = document.getElementById('carb');
 const fatInput = document.getElementById('fat');
 const saveBtn = document.getElementById('saveBtn');
+const jumpBtn = document.getElementById('jumpBtn');
+const eatBtn = document.getElementById('eatBtn');
+
 const caloriesEl = document.getElementById('calories');
 const expEl = document.getElementById('exp');
 const levelEl = document.getElementById('level');
-const miniImg = document.getElementById('mini');
 const goalDateEl = document.getElementById('goalDate');
+const miniImg = document.getElementById('mini');
 const weightChart = document.getElementById('weightChart');
 const ctx = weightChart.getContext('2d');
 
 // 数据保存
 let records = JSON.parse(localStorage.getItem('records') || '[]');
 
+// 更新小人
 function updateMini() {
-  // 小人体型随经验变化
-  miniImg.src = playerMini.exp > 200 ? 'mini-slim.png' : 'mini-normal.png';
-  // 动画效果
+  miniImg.src = playerMini.exp > 200
+    ? 'https://user3695.cn.imgto.link/public/20260306/mini-slim-png.avif'
+    : 'https://user3695.cn.imgto.link/public/20260306/mini-normal-png.avif';
+  
   miniImg.style.transform = 'translateY(-20px)';
   setTimeout(()=> miniImg.style.transform='translateY(0)', 500);
-  // 显示数据
+
   expEl.textContent = Math.floor(playerMini.exp);
   levelEl.textContent = playerMini.level;
 }
 
+// 绘制体重曲线
 function updateChart() {
   ctx.clearRect(0,0,weightChart.width,weightChart.height);
   if(records.length<2) return;
@@ -50,6 +56,7 @@ function updateChart() {
   ctx.stroke();
 }
 
+// 预测目标日期
 function predictGoal() {
   if(records.length<2) return;
   let lastWeight = records[records.length-1].weight;
@@ -63,7 +70,23 @@ function predictGoal() {
   goalDateEl.textContent = goalDate.toLocaleDateString();
 }
 
-// 保存今日数据
+// 动作函数
+function jumpMini() {
+  miniImg.src = 'https://user3695.cn.imgto.link/public/20260306/mini-jump-png.avif';
+  miniImg.style.transform = 'translateY(-20px)';
+  setTimeout(()=>{
+    updateMini();
+  },500);
+}
+
+function eatMini() {
+  miniImg.src = 'https://user3695.cn.imgto.link/public/20260306/mini-eat-png.avif';
+  setTimeout(()=>{
+    updateMini();
+  },500);
+}
+
+// 保存数据
 saveBtn.addEventListener('click', ()=>{
   const weight = parseFloat(weightInput.value);
   const protein = parseFloat(proteinInput.value);
@@ -74,7 +97,6 @@ saveBtn.addEventListener('click', ()=>{
   const calories = protein*4 + carb*4 + fat*9;
   caloriesEl.textContent = calories;
 
-  // 小人经验值
   const expGain = (146.8 - weight)*10;
   playerMini.exp += expGain;
   if(playerMini.exp >= playerMini.expToNext){
@@ -92,6 +114,10 @@ saveBtn.addEventListener('click', ()=>{
   updateChart();
   predictGoal();
 });
+
+// 动作按钮
+jumpBtn.addEventListener('click', jumpMini);
+eatBtn.addEventListener('click', eatMini);
 
 // 初始加载
 updateMini();
