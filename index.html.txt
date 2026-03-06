@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小小瘦身记</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h1>🔥 小小瘦身记 🔥</h1>
+  <div class="mini-player">
+    <img id="mini" src="mini-normal.png" alt="迷你自己">
+  </div>
+  <div class="record">
+    <h2>今日打卡</h2>
+    <label>体重(斤): <input type="number" id="weight"></label>
+    <label>蛋白(g): <input type="number" id="protein"></label>
+    <label>碳水(g): <input type="number" id="carb"></label>
+    <label>脂肪(g): <input type="number" id="fat"></label>
+    <button id="saveBtn">保存今日数据</button>
+  </div>
+  <div class="summary">
+    <p>今日热量: <span id="calories">0</span> kcal</p>
+    <p>小人经验: <span id="exp">0</span></p>
+    <p>小人等级: <span id="level">1</span></p>
+    <p>目标预测: <span id="goalDate">-</span></p>
+  </div>
+  <canvas id="weightChart" width="300" height="150"></canvas>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
