@@ -1,0 +1,99 @@
+// 初始化小人数据
+let playerMini = {
+  level: 1,
+  exp: 0,
+  bodyType: 'normal', // normal -> slim
+  expToNext: 100
+};
+
+// 获取元素
+const weightInput = document.getElementById('weight');
+const proteinInput = document.getElementById('protein');
+const carbInput = document.getElementById('carb');
+const fatInput = document.getElementById('fat');
+const saveBtn = document.getElementById('saveBtn');
+const caloriesEl = document.getElementById('calories');
+const expEl = document.getElementById('exp');
+const levelEl = document.getElementById('level');
+const miniImg = document.getElementById('mini');
+const goalDateEl = document.getElementById('goalDate');
+const weightChart = document.getElementById('weightChart');
+const ctx = weightChart.getContext('2d');
+
+// 数据保存
+let records = JSON.parse(localStorage.getItem('records') || '[]');
+
+function updateMini() {
+  // 小人体型随经验变化
+  miniImg.src = playerMini.exp > 200 ? 'mini-slim.png' : 'mini-normal.png';
+  // 动画效果
+  miniImg.style.transform = 'translateY(-20px)';
+  setTimeout(()=> miniImg.style.transform='translateY(0)', 500);
+  // 显示数据
+  expEl.textContent = Math.floor(playerMini.exp);
+  levelEl.textContent = playerMini.level;
+}
+
+function updateChart() {
+  ctx.clearRect(0,0,weightChart.width,weightChart.height);
+  if(records.length<2) return;
+  ctx.beginPath();
+  ctx.strokeStyle = '#ff6f91';
+  let stepX = weightChart.width/(records.length-1);
+  let max = Math.max(...records.map(r=>r.weight));
+  let min = Math.min(...records.map(r=>r.weight));
+  records.forEach((r,i)=>{
+    let y = weightChart.height - (r.weight - min)/(max-min)*weightChart.height;
+    if(i===0) ctx.moveTo(0,y);
+    else ctx.lineTo(i*stepX,y);
+  });
+  ctx.stroke();
+}
+
+function predictGoal() {
+  if(records.length<2) return;
+  let lastWeight = records[records.length-1].weight;
+  let firstWeight = records[0].weight;
+  let daysPassed = records.length;
+  let dailyLoss = (firstWeight - lastWeight)/daysPassed;
+  if(dailyLoss<=0) { goalDateEl.textContent = "-"; return; }
+  let daysNeeded = (lastWeight - 90)/dailyLoss;
+  let goalDate = new Date();
+  goalDate.setDate(goalDate.getDate() + daysNeeded);
+  goalDateEl.textContent = goalDate.toLocaleDateString();
+}
+
+// 保存今日数据
+saveBtn.addEventListener('click', ()=>{
+  const weight = parseFloat(weightInput.value);
+  const protein = parseFloat(proteinInput.value);
+  const carb = parseFloat(carbInput.value);
+  const fat = parseFloat(fatInput.value);
+  if(!weight) return alert('请输入体重');
+
+  const calories = protein*4 + carb*4 + fat*9;
+  caloriesEl.textContent = calories;
+
+  // 小人经验值
+  const expGain = (146.8 - weight)*10;
+  playerMini.exp += expGain;
+  if(playerMini.exp >= playerMini.expToNext){
+    playerMini.level++;
+    playerMini.exp -= playerMini.expToNext;
+    playerMini.expToNext = playerMini.level*100;
+  }
+
+  updateMini();
+
+  const today = new Date().toLocaleDateString();
+  records.push({date: today, weight, protein, carb, fat});
+  localStorage.setItem('records', JSON.stringify(records));
+
+  updateChart();
+  predictGoal();
+});
+
+// 初始加载
+updateMini();
+updateChart();
+predictGoal();
