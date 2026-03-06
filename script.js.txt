@@ -1,125 +1,112 @@
-// 小人数据
-let playerMini = {
-  level: 1,
-  exp: 0,
-  bodyType: 'normal', // normal -> slim
-  expToNext: 100
-};
+let playerMini={level:1,exp:0,bodyType:'normal',expToNext:100};
+const weightInput=document.getElementById('weight');
+const unitSelect=document.getElementById('weightUnit');
+let currentUnit='jin';
+const exerciseInput=document.getElementById('exerciseCalories');
+const targetInput=document.getElementById('targetCalories');
+const proteinEl=document.getElementById('protein');
+const carbEl=document.getElementById('carb');
+const fatEl=document.getElementById('fat');
+const caloriesEl=document.getElementById('calories');
+const expEl=document.getElementById('exp');
+const levelEl=document.getElementById('level');
+const goalDateEl=document.getElementById('goalDate');
+const miniImg=document.getElementById('mini');
+const weightChart=document.getElementById('weightChart');
+const ctx=weightChart.getContext('2d');
 
-// 获取元素
-const weightInput = document.getElementById('weight');
-const proteinInput = document.getElementById('protein');
-const carbInput = document.getElementById('carb');
-const fatInput = document.getElementById('fat');
-const saveBtn = document.getElementById('saveBtn');
-const jumpBtn = document.getElementById('jumpBtn');
-const eatBtn = document.getElementById('eatBtn');
+let records=JSON.parse(localStorage.getItem('records')||'[]');
+let meals=[];
 
-const caloriesEl = document.getElementById('calories');
-const expEl = document.getElementById('exp');
-const levelEl = document.getElementById('level');
-const goalDateEl = document.getElementById('goalDate');
-const miniImg = document.getElementById('mini');
-const weightChart = document.getElementById('weightChart');
-const ctx = weightChart.getContext('2d');
-
-// 数据保存
-let records = JSON.parse(localStorage.getItem('records') || '[]');
-
-// 更新小人
-function updateMini() {
-  miniImg.src = playerMini.exp > 200
-    ? 'https://user3695.cn.imgto.link/public/20260306/mini-slim-png.avif'
-    : 'https://user3695.cn.imgto.link/public/20260306/mini-normal-png.avif';
-  
-  miniImg.style.transform = 'translateY(-20px)';
-  setTimeout(()=> miniImg.style.transform='translateY(0)', 500);
-
-  expEl.textContent = Math.floor(playerMini.exp);
-  levelEl.textContent = playerMini.level;
-}
-
-// 绘制体重曲线
-function updateChart() {
-  ctx.clearRect(0,0,weightChart.width,weightChart.height);
-  if(records.length<2) return;
-  ctx.beginPath();
-  ctx.strokeStyle = '#ff6f91';
-  let stepX = weightChart.width/(records.length-1);
-  let max = Math.max(...records.map(r=>r.weight));
-  let min = Math.min(...records.map(r=>r.weight));
-  records.forEach((r,i)=>{
-    let y = weightChart.height - (r.weight - min)/(max-min)*weightChart.height;
-    if(i===0) ctx.moveTo(0,y);
-    else ctx.lineTo(i*stepX,y);
-  });
-  ctx.stroke();
-}
-
-// 预测目标日期
-function predictGoal() {
-  if(records.length<2) return;
-  let lastWeight = records[records.length-1].weight;
-  let firstWeight = records[0].weight;
-  let daysPassed = records.length;
-  let dailyLoss = (firstWeight - lastWeight)/daysPassed;
-  if(dailyLoss<=0) { goalDateEl.textContent = "-"; return; }
-  let daysNeeded = (lastWeight - 90)/dailyLoss;
-  let goalDate = new Date();
-  goalDate.setDate(goalDate.getDate() + daysNeeded);
-  goalDateEl.textContent = goalDate.toLocaleDateString();
-}
-
-// 动作函数
-function jumpMini() {
-  miniImg.src = 'https://user3695.cn.imgto.link/public/20260306/mini-jump-png.avif';
-  miniImg.style.transform = 'translateY(-20px)';
-  setTimeout(()=>{
-    updateMini();
-  },500);
-}
-
-function eatMini() {
-  miniImg.src = 'https://user3695.cn.imgto.link/public/20260306/mini-eat-png.avif';
-  setTimeout(()=>{
-    updateMini();
-  },500);
-}
-
-// 保存数据
-saveBtn.addEventListener('click', ()=>{
-  const weight = parseFloat(weightInput.value);
-  const protein = parseFloat(proteinInput.value);
-  const carb = parseFloat(carbInput.value);
-  const fat = parseFloat(fatInput.value);
-  if(!weight) return alert('请输入体重');
-
-  const calories = protein*4 + carb*4 + fat*9;
-  caloriesEl.textContent = calories;
-
-  const expGain = (146.8 - weight)*10;
-  playerMini.exp += expGain;
-  if(playerMini.exp >= playerMini.expToNext){
-    playerMini.level++;
-    playerMini.exp -= playerMini.expToNext;
-    playerMini.expToNext = playerMini.level*100;
-  }
-
-  updateMini();
-
-  const today = new Date().toLocaleDateString();
-  records.push({date: today, weight, protein, carb, fat});
-  localStorage.setItem('records', JSON.stringify(records));
-
-  updateChart();
-  predictGoal();
+// 单位切换
+unitSelect.addEventListener('change',()=>{
+  const oldUnit=currentUnit;
+  currentUnit=unitSelect.value;
+  let val=parseFloat(weightInput.value)||0;
+  if(oldUnit==='jin' && currentUnit==='kg') weightInput.value=(val/2).toFixed(1);
+  else if(oldUnit==='kg' && currentUnit==='jin') weightInput.value=(val*2).toFixed(1);
+  updateChart(); predictGoal();
 });
 
-// 动作按钮
-jumpBtn.addEventListener('click', jumpMini);
-eatBtn.addEventListener('click', eatMini);
+// 小人动画
+function updateMini(){
+  miniImg.src=playerMini.exp>200
+    ?'https://user3695.cn.imgto.link/public/20260306/mini-slim-png.avif'
+    :'https://user3695.cn.imgto.link/public/20260306/mini-normal-png.avif';
+  expEl.textContent=Math.floor(playerMini.exp);
+  levelEl.textContent=playerMini.level;
+}
 
-// 初始加载
-updateMini();
-updateChart();
-predictGoal();
+// 小人动作
+function jumpMini(){ miniImg.src='https://user3695.cn.imgto.link/public/20260306/mini-jump-png.avif'; miniImg.style.transform='translateY(-20px)'; setTimeout(()=>{ miniImg.src='https://user3695.cn.imgto.link/public/20260306/mini-normal-png.avif'; miniImg.style.transform='translateY(0)'; },500);}
+function eatMini(){ miniImg.src='https://user3695.cn.imgto.link/public/20260306/mini-eat-png.avif'; setTimeout(()=>{ miniImg.src='https://user3695.cn.imgto.link/public/20260306/mini-normal-png.avif'; },500);}
+function randomMiniAction(){
+  const actions=[jumpMini,eatMini,()=>{miniImg.style.transform='translateY(0) rotate(5deg)';setTimeout(()=>miniImg.style.transform='translateY(0) rotate(0deg)',300);},()=>{miniImg.style.transform='scale(1.05)';setTimeout(()=>miniImg.style.transform='scale(1)',300);}];
+  const act=actions[Math.floor(Math.random()*actions.length)]; act();
+}
+miniImg.addEventListener('click', randomMiniAction);
+
+// 饮食记录
+function calculateMealCalories(){ let total=0; meals.forEach(meal=>{total+=meal.gram*meal.caloriesPerGram;}); document.getElementById('mealCalories').textContent=total.toFixed(0); return total;}
+function addMeal(name,gram,calPerGram){meals.push({name,gram,caloriesPerGram:calPerGram}); calculateMealCalories(); autoSave();}
+document.querySelectorAll('.addMealBtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const parent=btn.parentElement;
+    const nameEl=parent.querySelector('.mealName');
+    const gramEl=parent.querySelector('.mealGram');
+    const name=nameEl.value;
+    const gram=parseFloat(gramEl.value)||0;
+    const kcalPerGram=2;
+    addMeal(name,gram,kcalPerGram);
+    nameEl.value=''; gramEl.value='';
+  });
+});
+
+// 总热量计算
+function updateCalories(){
+  const foodCalories=calculateMealCalories();
+  const exerciseCalories=parseFloat(exerciseInput.value)||0;
+  const totalCalories=foodCalories-exerciseCalories;
+  caloriesEl.textContent=Math.max(0,totalCalories.toFixed(0));
+  proteinEl.textContent=Math.round(foodCalories*0.3/4);
+  carbEl.textContent=Math.round(foodCalories*0.5/4);
+  fatEl.textContent=Math.round(foodCalories*0.2/9);
+  return totalCalories;
+}
+
+// 保存记录
+function autoSave(){
+  const today=new Date().toLocaleDateString();
+  const record={date:today,weight:parseFloat(weightInput.value)||0,meals:meals,exerciseCalories:parseFloat(exerciseInput.value)||0};
+  const idx=records.findIndex(r=>r.date===today);
+  if(idx>=0) records[idx]=record; else records.push(record);
+  localStorage.setItem('records',JSON.stringify(records));
+  playerMini.exp+=10;
+  if(playerMini.exp>=playerMini.expToNext){playerMini.level++; playerMini.exp-=playerMini.expToNext; playerMini.expToNext=playerMini.level*100;}
+  updateMini(); updateChart(); predictGoal(); randomMiniAction();
+}
+
+// 体重曲线
+function getWeightForChart(w){return currentUnit==='jin'?w:w/2;}
+function updateChart(){ctx.clearRect(0,0,weightChart.width,weightChart.height);if(records.length<2)return;ctx.beginPath();ctx.strokeStyle='#ff6f91'; let stepX=weightChart.width/(records.length-1); let max=Math.max(...records.map(r=>getWeightForChart(r.weight))); let min=Math.min(...records.map(r=>getWeightForChart(r.weight))); records.forEach((r,i)=>{let y=weightChart.height-(getWeightForChart(r.weight)-min)/(max-min)*weightChart.height;if(i===0)ctx.moveTo(0,y);else ctx.lineTo(i*stepX,y);}); ctx.stroke();}
+
+// 预测目标体重
+function predictGoal(){
+  if(records.length<2)return;
+  const netCal=updateCalories();
+  const lastWeight=getWeightForChart(records[records.length-1].weight);
+  const targetWeight=currentUnit==='jin'?90:45;
+  const dailyWeightChange=netCal/7700*2;
+  if(dailyWeightChange<=0){goalDateEl.textContent='-'; return;}
+  const daysNeeded=(lastWeight-targetWeight)/dailyWeightChange;
+  let goalDate=new Date(); goalDate.setDate(goalDate.getDate()+daysNeeded);
+  goalDateEl.textContent=goalDate.toLocaleDateString();
+}
+
+// 按钮事件
+[weightInput,exerciseInput].forEach(inp=>inp.addEventListener('input',autoSave));
+document.getElementById('jumpBtn').addEventListener('click',jumpMini);
+document.getElementById('eatBtn').addEventListener('click',eatMini);
+
+// 初始化
+updateMini(); updateChart(); predictGoal();
